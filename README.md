@@ -1,5 +1,5 @@
 # diffraction-ai
-## Data
+## Data:
 ```
 gsutil -m cp -r gs://diffraction-ai/training_data ./
 ```
