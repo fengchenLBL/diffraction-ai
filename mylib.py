@@ -142,12 +142,12 @@ def hyper_table(path='structured_data_classifier'):
     return(hyper_df)
 
 def predic_error_analysis(x_train, y_train, y_score_train, x_test, y_test, y_score):
-    df1 = copy.deepcopy(x_train)
+    df1 = pd.DataFrame(y_train)
     df1['obs'] = y_train
     df1['predict'] = y_score_train
     df1['data'] = 'Train'
     #display(df1)
-    df2 = copy.deepcopy(x_test)
+    df2 = pd.DataFrame(y_test)
     df2['obs'] = y_test
     df2['predict'] = y_score
     df2['data'] = 'Test'
