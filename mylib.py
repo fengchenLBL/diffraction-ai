@@ -172,114 +172,157 @@ def predic_error_analysis(x_train, y_train, y_score_train, x_test, y_test, y_sco
     fig.show()
     
 
-# ROC PR curves for multi-class
+    
 def plot_pr_multi_class(y_train, y_score_train, y_test, y_score_test):
-
+    # ROC PR curves for multi-class
     y_class = np.unique(y_train)
     class_dict_test = {}
     for c in y_class:
-        score = [s[c] for s in y_score_test]
+        score = [s[np.argmax(y_class == c)] for s in y_score_test]
         obs = y_test == c
         class_dict_test[c] = {'obs': obs, 'score': score}
 
     class_dict_train = {}
     for c in y_class:
-        score = [s[c] for s in y_score_train]
+        score = [s[np.argmax(y_class == c)] for s in y_score_train]
         obs = y_train == c
         class_dict_train[c] = {'obs': obs, 'score': score}
 
-    
-    fig = make_subplots(rows=2, cols=2)
-    
+    fig = make_subplots(rows=1, cols=1)
+
     # subplot for ROC curve: train data
     fig.add_shape(
         type='line', line=dict(dash='dash'),
         x0=0, x1=1, y0=0, y1=1,
         row=1, col=1)
-    
+
     Y_Scores = [class_dict_train[c]['score'] for c in class_dict_train]
     Y_Obs = [class_dict_train[c]['obs'] for c in class_dict_train]
     Y_Names = y_class
+    class2auc = {}
     for i in range(len(Y_Scores)):
         y_true = Y_Obs[i]
         y_score = Y_Scores[i]
 
         fpr, tpr, _ = roc_curve(y_true, y_score)
         auc_score = roc_auc_score(y_true, y_score)
-
+        if not np.isnan(auc_score):
+            class2auc[Y_Names[i]] = auc_score
         name = f"class {Y_Names[i]} ROC: Train (AUC={auc_score:.4f})"
         fig.add_trace(go.Scatter(x=fpr, y=tpr, name=name, mode='lines'),row=1, col=1)
-    
+
+    class2count = dict(zip(Y_Names, [sum(obs) for obs in Y_Obs]))    
+    class2weight = {}
+    for c in class2auc:
+        class2weight[c] = class2count[c]
+    avg_auc = sum(np.array(list(class2auc.values())) * (np.array(list(class2weight.values()))/sum(class2weight.values())))
+
     fig.update_xaxes(title_text="False Positive Rate", row=1, col=1)
     fig.update_yaxes(title_text="True Positive Rate (Train)", row=1, col=1)
+    fig.update_layout(title="Average ROC: {}".format(round(avg_auc,2)))
+    fig.show()
 
+    fig = make_subplots(rows=1, cols=1)
     # subplot for ROC curve: train data
     fig.add_shape(
         type='line', line=dict(dash='dash'),
         x0=0, x1=1, y0=0, y1=1,
-        row=1, col=2)
-    
+        row=1, col=1)
+
     Y_Scores = [class_dict_test[c]['score'] for c in class_dict_test]
     Y_Obs = [class_dict_test[c]['obs'] for c in class_dict_test]
     Y_Names = y_class
+    class2auc = {}
     for i in range(len(Y_Scores)):
-        y_true = Y_Obs[i]
-        y_score = Y_Scores[i]
+        try:
+            y_true = Y_Obs[i]
+            y_score = Y_Scores[i]
 
-        fpr, tpr, _ = roc_curve(y_true, y_score)
-        auc_score = roc_auc_score(y_true, y_score)
+            fpr, tpr, _ = roc_curve(y_true, y_score)
+            auc_score = roc_auc_score(y_true, y_score)
+            if not np.isnan(auc_score):
+                class2auc[Y_Names[i]] = auc_score
+            name = f"class {Y_Names[i]} ROC: Test (AUC={auc_score:.4f})"
+            fig.add_trace(go.Scatter(x=fpr, y=tpr, name=name, mode='lines'),row=1, col=1)
+        except:
+            print("something wrong in {}".format(Y_Names[i]))
 
-        name = f"class {Y_Names[i]} ROC: Test (AUC={auc_score:.4f})"
-        fig.add_trace(go.Scatter(x=fpr, y=tpr, name=name, mode='lines'),row=1, col=2)
-    
-    fig.update_xaxes(title_text="False Positive Rate", row=1, col=2)
-    fig.update_yaxes(title_text="True Positive Rate (Test)", row=1, col=2)
+    class2count = dict(zip(Y_Names, [sum(obs) for obs in Y_Obs]))    
+    class2weight = {}
+    for c in class2auc:
+        class2weight[c] = class2count[c]
+    avg_auc = sum(np.array(list(class2auc.values())) * (np.array(list(class2weight.values()))/sum(class2weight.values())))
 
+    fig.update_xaxes(title_text="False Positive Rate", row=1, col=1)
+    fig.update_yaxes(title_text="True Positive Rate (Test)", row=1, col=1)
+    fig.update_layout(title="Average ROC: {}".format(round(avg_auc,2)))
+    fig.show()
+
+    fig = make_subplots(rows=1, cols=1)
     # subplot for PR curve: train data
     fig.add_shape(
         type='line', line=dict(dash='dash'),
         x0=0, x1=1, y0=1, y1=0, 
-        row=2,col=1)
+        row=1,col=1)
     Y_Scores = [class_dict_train[c]['score'] for c in class_dict_train]
     Y_Obs = [class_dict_train[c]['obs'] for c in class_dict_train]
     Y_Names = y_class
+    class2auc = {}
     for i in range(len(Y_Scores)):
-        y_true = Y_Obs[i]
-        y_score = Y_Scores[i]
+        try:
+            y_true = Y_Obs[i]
+            y_score = Y_Scores[i]
+            precision, recall, _ = precision_recall_curve(y_true, y_score)
+            auc_score = average_precision_score(y_true, y_score)
+            if not np.isnan(auc_score):
+                class2auc[Y_Names[i]] = auc_score
+            name = f"class {Y_Names[i]} PR Train (AUC={auc_score:.4f})"
+            fig.add_trace(go.Scatter(x=recall, y=precision, name=name, mode='lines'),row=1,col=1)
+        except:
+            print("something wrong in {}".format(Y_Names[i]))
 
-        precision, recall, _ = precision_recall_curve(y_true, y_score)
-        auc_score = average_precision_score(y_true, y_score)
-    
-        name = f"class {Y_Names[i]} PR Train (AUC={auc_score:.4f})"
-        fig.add_trace(go.Scatter(x=recall, y=precision, name=name, mode='lines'),row=2,col=1)
+    class2count = dict(zip(Y_Names, [sum(obs) for obs in Y_Obs]))    
+    class2weight = {}
+    for c in class2auc:
+        class2weight[c] = class2count[c]
+    avg_auc = sum(np.array(list(class2auc.values())) * (np.array(list(class2weight.values()))/sum(class2weight.values())))
 
-    fig.update_xaxes(title_text="Recall", row=2, col=1)
-    fig.update_yaxes(title_text="Precision (Train)", row=2, col=1)
+    fig.update_xaxes(title_text="Recall", row=1, col=1)
+    fig.update_yaxes(title_text="Precision (Train)", row=1, col=1)
+    fig.update_layout(title="Average PR: {}".format(round(avg_auc,2)))
+    fig.show()
 
+    fig = make_subplots(rows=1, cols=1)
     # subplot for PR curve: test data
     fig.add_shape(
         type='line', line=dict(dash='dash'),
         x0=0, x1=1, y0=1, y1=0, 
-        row=2,col=2)
+        row=1,col=1)
     Y_Scores = [class_dict_test[c]['score'] for c in class_dict_test]
     Y_Obs = [class_dict_test[c]['obs'] for c in class_dict_test]
     Y_Names = y_class
+    class2auc = {}
     for i in range(len(Y_Scores)):
-        y_true = Y_Obs[i]
-        y_score = Y_Scores[i]
+        try:
+            y_true = Y_Obs[i]
+            y_score = Y_Scores[i]
 
-        precision, recall, _ = precision_recall_curve(y_true, y_score)
-        auc_score = average_precision_score(y_true, y_score)
-    
-        name = f"class {Y_Names[i]} PR Test (AUC={auc_score:.4f})"
-        fig.add_trace(go.Scatter(x=recall, y=precision, name=name, mode='lines'),row=2,col=2)
+            precision, recall, _ = precision_recall_curve(y_true, y_score)
+            auc_score = average_precision_score(y_true, y_score)
+            if not np.isnan(auc_score):
+                class2auc[Y_Names[i]] = auc_score
+            name = f"class {Y_Names[i]} PR Test (AUC={auc_score:.4f})"
+            fig.add_trace(go.Scatter(x=recall, y=precision, name=name, mode='lines'),row=1,col=1)
+        except:
+            print("something wrong in {}".format(Y_Names[i]))
+            
+    class2count = dict(zip(Y_Names, [sum(obs) for obs in Y_Obs]))    
+    class2weight = {}
+    for c in class2auc:
+        class2weight[c] = class2count[c]
+    avg_auc = sum(np.array(list(class2auc.values())) * (np.array(list(class2weight.values()))/sum(class2weight.values())))
 
-    fig.update_xaxes(title_text="Recall", row=2, col=2)
-    fig.update_yaxes(title_text="Precision (Test)", row=2, col=2)
-
-    fig.update_layout(
-        title="ROC & Precision-Recall Curves",
-        yaxis=dict(scaleanchor="x", scaleratio=1),
-        xaxis=dict(constrain='domain'),
-        width=1200, height=1000)
+    fig.update_xaxes(title_text="Recall", row=1, col=1)
+    fig.update_yaxes(title_text="Precision (Test)", row=1, col=1)
+    fig.update_layout(title="Average PR: {}".format(round(avg_auc,2)))
     fig.show()
