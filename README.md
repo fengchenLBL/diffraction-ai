@@ -13,26 +13,26 @@ gsutil -m cp -r gs://diffraction-ai/training_data ./
 
 #### Notebook: [image_classification.ipynb](image_classification.ipynb)
 
-#### Training data
+#### Training data for blank,ps1,ps2,multi,ice,badice
 ![image](./outputs/multiclass_training_samples.png)
 ![image](./outputs/multiclass_training_data.png)
 
-#### ROC Curve (Training)
+#### ROC Curve (Training), blank,ps1,ps2,multi,ice,badice
 ![image](./outputs/multiclass_ROC_training.png)
 
-#### ROC Curve (Testing)
+#### ROC Curve (Testing), blank,ps1,ps2,multi,ice,badice
 ![image](./outputs/multiclass_ROC_testing.png)
 
-#### PR Curve (Training)
+#### PR Curve (Training), blank,ps1,ps2,multi,ice,badice
 ![image](./outputs/multiclass_PR_training.png)
 
-#### PR Curve (Testing)
+#### PR Curve (Testing), blank,ps1,ps2,multi,ice,badice
 ![image](./outputs/multiclass_PR_testing.png)
 
-#### Confusion Matrix (Training)
+#### Confusion Matrix (Training), blank,ps1,ps2,multi,ice,badice
 ![image](./outputs/multiclass_ConfusionMatrix_training.png)
 
-#### Confusion Matrix (Testing)
+#### Confusion Matrix (Testing), blank,ps1,ps2,multi,ice,badice
 ![image](./outputs/multiclass_ConfusionMatrix_testing.png)
 
 ### Multi-class multi-label
@@ -43,46 +43,46 @@ gsutil -m cp -r gs://diffraction-ai/training_data ./
 ### Multi-class _mos1_
 #### Notebook: [image_classification4.ipynb](image_classification4.ipynb)
 
-#### Training data
+#### Training data for mos1
 ![image](./outputs/mos1_classification_training_samples.png)
 ![image](./outputs/mos1_classification_training_data.png)
 
-#### ROC Curve (Training)
+#### ROC Curve (Training), mos1
 ![image](./outputs/mos1_classification_ROC_training.png)
 
-#### ROC Curve (Testing)
+#### ROC Curve (Testing), mos1
 ![image](./outputs/mos1_classification_ROC_testing.png)
 
-#### PR Curve (Training)
+#### PR Curve (Training), mos1
 ![image](./outputs/mos1_classification_PR_training.png)
 
-#### PR Curve (Testing)
+#### PR Curve (Testing), mos1
 ![image](./outputs/mos1_classification_PR_testing.png)
 
-#### Confusion Matrix (Training)
+#### Confusion Matrix (Training), mos1
 ![image](./outputs/mos1_classification_ConfusionMatrix_training.png)
 
-#### Confusion Matrix (Testing)
+#### Confusion Matrix (Testing), mos1
 ![image](./outputs/mos1_classification_ConfusionMatrix_testing.png)
 
 ## Regression: _mos1, mos2_
 ### _mos1_
 #### Notebook: [image_regression.ipynb](image_regression.ipynb)
 
-#### Training data
+#### Training data, mos1
 ![image](./outputs/mos1_regression_training_samples.png)
 ![image](./outputs/mos1_regression_training_data.png)
 
-#### Prediction Error Analysis
+#### Prediction Error Analysis, mos1
 ![image](./outputs/mos1_regression_Predict_Error_Analysis.png)
 
 
 ### _mos2_
 #### [image_regression2.ipynb](image_regression2.ipynb)
 
-#### Training data
+#### Training data, mos2
 ![image](./outputs/mos2_regression_training_samples.png)
 ![image](./outputs/mos2_regression_training_data.png)
 
-#### Prediction Error Analysis
+#### Prediction Error Analysis, mos2
 ![image](./outputs/mos2_regression_Predict_Error_Analysis.png)
